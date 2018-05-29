@@ -85,5 +85,129 @@ namespace MineSweeper
             // Remember to return the count!
             return count;
         }
+
+        void FFuncover(int x, int y, bool[,] visited)
+        {
+            // Is x and y within bounds of the grid?
+            if(x >= 0 && y >= 0 &&
+                x< width && y < height)
+            {
+                // Has this coordinate been visited?
+                if (visited[x, y])
+                    return;
+                // Reveal tile in that x and y coordinate
+                Tile tile = tiles[x, y];
+                int adjacentMines = GetAdjacentMineCount(tile);
+                tile.Reveal(adjacentMines);
+
+                // If there were no adjacent mines around that tile
+                if (adjacentMines == 0)
+                {
+                    // This tile has been visited
+                    visited[x, y] = true;
+                    // Visit all other tiles around this tile
+                    FFuncover(x - 1, y, visited);
+                    FFuncover(x + 1, y, visited);
+                    FFuncover(x, y - 1, visited);
+                    FFuncover(x, y + 1, visited);
+                }
+            }
+        }
+
+        // Uncovers all mines in the grid
+        void UncoverMines(int mineState = 0)
+        {
+            // Loop through 2D array
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    Tile tile = tiles[x, y];
+                    if (tile.isMine)
+                    {
+                        // Reveal that tile
+                        int adjacentMines = GetAdjacentMineCount(tile);
+                        tile.Reveal(adjacentMines, mineState);
+                    }
+                }
+            }
+        }
+
+        // Scans the grid to check if there are no more empty tiles
+        bool NoMoreEmptyTiles()
+        {
+            // Set empty tile count to zero
+            int emptyTileCount = 0;
+            // Loop through 2D array
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    Tile tile = tiles[x, y];
+                    // if tile is NOT revealed AND NOT a mine
+                    if (!tile.isRevealed && !tile.isMine)
+                    {
+                        // We found an empty tile!
+                        emptyTileCount += 1;
+                    }
+                }
+            }
+
+            // If there are empty tiles - return true
+            // If there are no empty tiles - return false
+            return emptyTileCount == 0;
+        }
+
+        // Uncovers a selected tile
+        void SelectTile(Tile selected)
+        {
+            int adjacentMines = GetAdjacentMineCount(selected);
+            selected.Reveal(adjacentMines);
+
+            // Is the selected tile a mine?
+            if (selected.isMine)
+            {
+                // Uncover all mines - with default loss state '0'
+                UncoverMines();
+                // Lose
+            }
+            // Otherwise, are there no mines around this tile?
+            else if (adjacentMines == 0)
+            {
+                int x = selected.x;
+                int y = selected.y;
+                // Then use flood fill to uncover all adjacent mines
+                FFuncover(x, y, new bool[width, height]);
+            }
+            // Are there no more empty tiles in the game at this point?
+            if(NoMoreEmptyTiles())
+            {
+                // Uncover all mines - wth the win state '1'
+                UncoverMines(1);
+                // Win
+            }
+        }
+        
+        void Update()
+        {
+            // Is mouse button down?
+            if(Input.GetMouseButtonDown(0))
+            {
+                // Ray cast from the camera using the mouse position
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+                // Did the raycast hit something?
+                if(hit.collider != null)
+                {
+                    // Is the thing we hit a 'Tile'?
+                    Tile hitTile = hit.collider.GetComponent<Tile>();
+                    if(hitTile != null)
+                    {
+                        // Perform game Logic with selected tile
+                        SelectTile(hitTile);
+                    }
+                }
+            }
+        }
     }
 }

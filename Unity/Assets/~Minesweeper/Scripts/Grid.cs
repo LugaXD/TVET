@@ -74,7 +74,7 @@ namespace MineSweeper
                     // Select current tile
                     Tile currentTile = tiles[desiredX, desiredY];
                     // Check if that tile is a mine
-                    if(currentTile.isMine)
+                    if (currentTile.isMine)
                     {
                         // Increment count by 1
                         count++;
@@ -89,8 +89,8 @@ namespace MineSweeper
         void FFuncover(int x, int y, bool[,] visited)
         {
             // Is x and y within bounds of the grid?
-            if(x >= 0 && y >= 0 &&
-                x< width && y < height)
+            if (x >= 0 && y >= 0 &&
+                x < width && y < height)
             {
                 // Has this coordinate been visited?
                 if (visited[x, y])
@@ -180,28 +180,28 @@ namespace MineSweeper
                 FFuncover(x, y, new bool[width, height]);
             }
             // Are there no more empty tiles in the game at this point?
-            if(NoMoreEmptyTiles())
+            if (NoMoreEmptyTiles())
             {
                 // Uncover all mines - wth the win state '1'
                 UncoverMines(1);
                 // Win
             }
         }
-        
+
         void Update()
         {
             // Is mouse button down?
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 // Ray cast from the camera using the mouse position
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
                 // Did the raycast hit something?
-                if(hit.collider != null)
+                if (hit.collider != null)
                 {
                     // Is the thing we hit a 'Tile'?
                     Tile hitTile = hit.collider.GetComponent<Tile>();
-                    if(hitTile != null)
+                    if (hitTile != null)
                     {
                         // Perform game Logic with selected tile
                         SelectTile(hitTile);

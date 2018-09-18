@@ -15,6 +15,11 @@ public class GameManagement : MonoBehaviour
     public Text level4Indicator;
     public Text level5Indicator;
 
+    public Text level1costIndicator;
+    public Text level2costIndicator;
+    public Text level3costIndicator;
+    public Text level4costIndicator;
+    public Text level5costIndicator;
 
     // Storage for how much of each
     public float moneyCurrent;
@@ -52,6 +57,11 @@ public class GameManagement : MonoBehaviour
         level3Indicator.text = "" + level3Current;
         level4Indicator.text = "" + level4Current;
         level5Indicator.text = "" + level5Current;
+
+        level1costIndicator.text = "" + (int)level1Cost;
+        level2costIndicator.text = "" + (int)level2Cost;
+        level3costIndicator.text = "" + (int)level3Cost;
+        level4costIndicator.text = "" + (int)level4Cost;
     }
 
     // Function to givemoney on click
